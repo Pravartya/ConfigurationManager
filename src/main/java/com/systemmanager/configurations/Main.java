@@ -7,6 +7,7 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.systemmanager.configurations.app.DDBConfigurationManager;
 
 public class Main {
 
@@ -40,18 +41,11 @@ public class Main {
 		cacheTime = sc.nextInt();
 		
 		
-		DDBConfigurationManager newApplication = new DDBConfigurationManager(domain, realm, cacheTime, clientDetails);
-		//System.out.println(newApplication.myDomainRealm().get(0).getCfgKey());
-		System.out.println("Size of myDomainRealm list " +newApplication.myDomainRealm().size());
-		
-		System.out.println(newApplication.Cache("sqs.configuration"));
-		System.out.println(newApplication.Cache("sqs.configuration"));
-		System.out.println(newApplication.Cache("sqs.reservationRequests.queueName"));
-		
-		
-		System.out.println(newApplication.GetParticularConfigurationIntegerValue("visibilityTimeout"));
-		System.out.println(newApplication.GetParticularConfigurationMapValue("sqs.configuration"));
-		System.out.println(newApplication.GetParticularConfigurationDoubleValue("sqs.configuration"));
+//		DDBConfigurationManager newApplication = new DDBConfigurationManager(domain, realm, cacheTime, clientDetails);
+//		//System.out.println(newApplication.myDomainRealm().get(0).getCfgKey());
+//		System.out.println("Size of myDomainRealm list " +newApplication.myDomainRealm().size());
+//		
+//	
 		
 		
 		//System.out.println(newApplication.GetParticularConfigurationStringValue("sqs.configurations"));
