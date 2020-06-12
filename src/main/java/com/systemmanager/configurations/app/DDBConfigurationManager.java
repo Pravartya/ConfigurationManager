@@ -1,48 +1,26 @@
 package com.systemmanager.configurations.app;
 
-import java.util.Arrays;
-import java.util.Collections;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.collections4.ListUtils;
-
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
-import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.google.common.base.Joiner;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.sun.jdi.IntegerValue;
-import com.systemmanager.configurations.cache.CacheData;
+import com.systemmanager.configurations.cache.ConfigurationCache;
 import com.systemmanager.configurations.entity.ConfigurationMap;
+
 public class DDBConfigurationManager implements ConfigurationManager  {
 
-	String domain;
-	String realm;
-	Integer cacheTime;
-	CacheData cache;
+	ConfigurationCache cache;
 	Map<String, ConfigurationMap> cache2 = new HashMap<String, ConfigurationMap>();
 
-	
-	
+
+
 	public DDBConfigurationManager(String domain,String realm,Integer cacheTime,DynamoDBMapper mapper,String applicationName) {
-		this.domain = domain;
-		this.realm = realm;
-		this.cacheTime = cacheTime;
-		cache = new CacheData(mapper,cacheTime,domain,realm,applicationName);
+		cache = new ConfigurationCache(mapper,cacheTime,domain,realm,applicationName);
 	}
 
-	
-	
+
+
 	//** Returns stringValue if found, otherwise throws IllegalArgumentException **///
 	@Override
 	public String getConfigurationStringValue(String cfgKey) throws IllegalArgumentException{
@@ -74,6 +52,14 @@ public class DDBConfigurationManager implements ConfigurationManager  {
 		Double doubleValue = cache.getConfigurationFromCache(cfgKey).getDoubleValue();
 		if(doubleValue == null )throw new IllegalArgumentException("No Double Value Found!for: "+ cfgKey);
 		return doubleValue;
+	}
+
+	//** Returns mapValue if found, otherwise throws IllegalArgumentException **///
+	@Override
+	public Map<String, String> getConfigurationMapValue(String cfgKey) throws IllegalArgumentException {
+		Map<String,String> mapValue = cache.getConfigurationFromCache(cfgKey).getMapValue();
+		if(mapValue == null )throw new IllegalArgumentException("No Map Value Found!for: "+ cfgKey);
+		return mapValue;
 	}
 
 

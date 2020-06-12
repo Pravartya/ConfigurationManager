@@ -2,16 +2,15 @@ package com.systemmanager.configurations;
 
 
 import java.util.Scanner;
-
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.systemmanager.configurations.app.DDBConfigurationManager;
 
 
 
-///************* THIS CLASS IS JUST FOR TESTING PURPOSE *********////// 
+
+///************* THIS CLASS IS JUST FOR BUILDING & TESTING PURPOSE ONLY *********////// 
 public class Main {
 
 	public static void main(String[] args) {
@@ -19,22 +18,22 @@ public class Main {
 		String realm;
 		Integer cacheTime;
 		AmazonDynamoDB clientDetails;
-		
+
 		ProfileCredentialsProvider credentialsProvider = new ProfileCredentialsProvider();
-	    try {
-	        credentialsProvider.getCredentials();
-	    } catch (Exception e) {
-	        throw new AmazonClientException(
-	                "Cannot load the credentials from the credential profiles file. " +
-	                "Please make sure that your credentials file is at the correct " +
-	                "location (C:\\Users\\PD\\.aws\\credentials), and is in valid format.",
-	                e);
-	    }
+		try {
+			credentialsProvider.getCredentials();
+		} catch (Exception e) {
+			throw new AmazonClientException(
+					"Cannot load the credentials from the credential profiles file. " +
+							"Please make sure that your credentials file is at the correct " +
+							"location (C:\\Users\\PD\\.aws\\credentials), and is in valid format.",
+							e);
+		}
 		clientDetails = AmazonDynamoDBClientBuilder.standard().withCredentials(credentialsProvider)
-				 .withRegion("us-east-1")
-				 .build();
-		
-	
+				.withRegion("us-east-1")
+				.build();
+
+
 		Scanner sc = new Scanner(System.in);
 		System.out.println("Enter Domain of your application");
 		domain = sc.nextLine();
@@ -42,17 +41,17 @@ public class Main {
 		realm = sc.nextLine();
 		System.out.println("Enter the Cache time required in minutes");
 		cacheTime = sc.nextInt();
-		
-		
-//		DDBConfigurationManager newApplication = new DDBConfigurationManager(domain, realm, cacheTime, clientDetails);
-//		//System.out.println(newApplication.myDomainRealm().get(0).getCfgKey());
-//		System.out.println("Size of myDomainRealm list " +newApplication.myDomainRealm().size());
-//		
-//	
-		
-		
+
+
+		//		DDBConfigurationManager newApplication = new DDBConfigurationManager(domain, realm, cacheTime, clientDetails);
+		//		//System.out.println(newApplication.myDomainRealm().get(0).getCfgKey());
+		//		System.out.println("Size of myDomainRealm list " +newApplication.myDomainRealm().size());
+		//		
+		//	
+
+
 		//System.out.println(newApplication.GetParticularConfigurationStringValue("sqs.configurations"));
-	
+
 
 	}
 
