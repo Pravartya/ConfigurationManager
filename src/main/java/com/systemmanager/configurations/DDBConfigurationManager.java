@@ -30,7 +30,7 @@ public class DDBConfigurationManager implements ConfigurationManager  {
 	Integer cacheTime;
 	static AmazonDynamoDB clientDetails;
 	static List<ConfigurationMap> myDomainRealm =  Collections.emptyList();
-	CacheData2 cache;
+	CacheData cache;
 	Map<String, ConfigurationMap> cache2 = new HashMap<String, ConfigurationMap>();
 	
 	
@@ -68,7 +68,7 @@ public class DDBConfigurationManager implements ConfigurationManager  {
 		appendList("*",realm);
 		appendList("*","*");
 		
-		cache = new CacheData2(myDomainRealm,cacheTime);
+		cache = new CacheData(myDomainRealm,cacheTime);
 	}
 	
 	@Override

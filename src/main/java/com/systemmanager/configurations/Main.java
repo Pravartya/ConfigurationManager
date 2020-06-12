@@ -54,7 +54,6 @@ public class Main {
 		System.out.println(newApplication.GetParticularConfigurationDoubleValue("sqs.configuration"));
 		
 		
-		
 		//System.out.println(newApplication.GetParticularConfigurationStringValue("sqs.configurations"));
 	
 
