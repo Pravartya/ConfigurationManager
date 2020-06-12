@@ -24,87 +24,55 @@ import com.google.common.cache.LoadingCache;
 import com.sun.jdi.IntegerValue;
 import com.systemmanager.configurations.cache.CacheData;
 import com.systemmanager.configurations.entity.ConfigurationMap;
-import com.systemmanager.configurations.entity.ConfigurationMap.MapValue;
-
 public class DDBConfigurationManager implements ConfigurationManager  {
 
 	String domain;
 	String realm;
 	Integer cacheTime;
-	static AmazonDynamoDB clientDetails;
-	static List<ConfigurationMap> myDomainRealm =  Collections.emptyList();
 	CacheData cache;
 	Map<String, ConfigurationMap> cache2 = new HashMap<String, ConfigurationMap>();
+
 	
 	
-	
-	public static void appendList(String domain,String realm)
-	{
-		try {
-			myDomainRealm = ListUtils.union(myDomainRealm,query(domain,realm));
-		}
-		catch(Exception e){}		
-	}
-	public static List<ConfigurationMap> query(String domain,String realm) {
-		
-		String domainRealm =  Joiner.on(",").skipNulls().join(Arrays.asList(domain,realm));
-	    DynamoDBMapper mapper = new DynamoDBMapper(clientDetails);
-	    Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
-		eav.put(":v1", new AttributeValue().withS(domainRealm));
-		DynamoDBQueryExpression<ConfigurationMap> queryExpression = new DynamoDBQueryExpression<ConfigurationMap>()
-				.withKeyConditionExpression("DomainRealm = :v1")
-				.withExpressionAttributeValues(eav);
-		PaginatedQueryList<ConfigurationMap> list = mapper.query(ConfigurationMap.class, queryExpression);
-		return list;
-	}
-	
-	
-	public DDBConfigurationManager(String domain,String realm,Integer cacheTime,DynamoDBMapper mapper) {
+	public DDBConfigurationManager(String domain,String realm,Integer cacheTime,DynamoDBMapper mapper,String applicationName) {
 		this.domain = domain;
 		this.realm = realm;
 		this.cacheTime = cacheTime;
-		this.clientDetails = clientDetails;
-		
-		
-		appendList(domain,realm);
-		appendList(domain,"*");
-		appendList("*",realm);
-		appendList("*","*");
-		
-		cache = new CacheData(mapper,cacheTime,domain,realm);
-	}
-	
-	@Override
-	public List<ConfigurationMap> myDomainRealm() {
-		return myDomainRealm;
-	}
-	
-	@Override
-	public String getConfigurationStringValue(String cfgKey) throws IllegalArgumentException{
-			String stringValue =  cache.getConfigurationFromCache(cfgKey).getStringValue();
-			if(stringValue == null) throw new IllegalArgumentException("No String Value Found!");
-			return stringValue;
+		cache = new CacheData(mapper,cacheTime,domain,realm,applicationName);
 	}
 
+	
+	
+	//** Returns stringValue if found, otherwise throws IllegalArgumentException **///
 	@Override
-	public MapValue getConfigurationMapValue(String cfgKey) throws IllegalArgumentException  {
-		MapValue mapValue = cache.getConfigurationFromCache(cfgKey).getMapValue();
-		if(mapValue == null) throw new IllegalArgumentException("No Map Value Found!");
-		return mapValue;
+	public String getConfigurationStringValue(String cfgKey) throws IllegalArgumentException{
+		String stringValue =  cache.getConfigurationFromCache(cfgKey).getStringValue();
+		if(stringValue == null) throw new IllegalArgumentException("No String Value Found! for: "+ cfgKey);
+		return stringValue;
 	}
-	
-	
+
+	//** Returns listStringValue if found, otherwise throws IllegalArgumentException **///
+	@Override
+	public List<String> getConfigurationListStringValue(String cfgKey) throws IllegalArgumentException  {
+		List<String> listStringValue = cache.getConfigurationFromCache(cfgKey).getListStringValue();
+		if(listStringValue == null) throw new IllegalArgumentException("No Map Value Found!for: "+ cfgKey);
+		return listStringValue ;
+	}
+
+
+	//** Returns integerValue if found, otherwise throws IllegalArgumentException **///
 	@Override
 	public Integer getConfigurationIntegerValue(String cfgKey) throws IllegalArgumentException {
 		Integer integerValue = cache.getConfigurationFromCache(cfgKey).getIntegerValue();
-		if(integerValue == null) throw new IllegalArgumentException("No Integer Value Found!");
+		if(integerValue == null) throw new IllegalArgumentException("No Integer Value Found!for: "+ cfgKey);
 		return integerValue;
 	}
 
+	//** Returns doubleValue if found, otherwise throws IllegalArgumentException **///
 	@Override
 	public Double getConfigurationDoubleValue(String cfgKey) throws IllegalArgumentException {
 		Double doubleValue = cache.getConfigurationFromCache(cfgKey).getDoubleValue();
-		if(doubleValue == null )throw new IllegalArgumentException("No Double Value Found!");
+		if(doubleValue == null )throw new IllegalArgumentException("No Double Value Found!for: "+ cfgKey);
 		return doubleValue;
 	}
 

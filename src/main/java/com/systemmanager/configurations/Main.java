@@ -9,6 +9,9 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.systemmanager.configurations.app.DDBConfigurationManager;
 
+
+
+///************* THIS CLASS IS JUST FOR TESTING PURPOSE *********////// 
 public class Main {
 
 	public static void main(String[] args) {

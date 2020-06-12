@@ -12,54 +12,57 @@ import com.systemmanager.configurations.entity.ConfigurationMap;
 import com.systemmanager.configurations.store.DDBConfigurationMapStore;
 
 public class CacheData {
-	
+
 	String domain;
 	String realm;
 	DynamoDBMapper mapper;
 	LoadingCache<String, ConfigurationMap> cache;
-		
-	
+
+	//***  Return Reference type object of ConfigurationMap from cache  **///
 	public ConfigurationMap getConfigurationFromCache(String cfgKey) {
 		return cache.getUnchecked(cfgKey);
 	}
+
 	
-	public CacheData(DynamoDBMapper mapper  ,Integer cacheTime ,String domain,String realm) {
-	      //create a cache for configurations data based on the cfgKey
+	//** Constructor call to build the cache in the system based on the configurationKey provided by the client **///
+	public CacheData(DynamoDBMapper mapper  ,Integer cacheTime ,String domain,String realm,String applicationName) {
+		
 		try {
-			
-			 CacheLoader<String, ConfigurationMap> loader = new CacheLoader<String,ConfigurationMap>() { 
-	        	 // build the cacheloader
-	            @Override
-	            public ConfigurationMap load(String cfgKey) throws Exception {
-	               //make the expensive call
-	               return getConfigurationFromDDB(cfgKey);
-	           }
-			 };
-			  cache = CacheBuilder.newBuilder()
-			         .expireAfterAccess(cacheTime, TimeUnit.MINUTES)      // cache will expire after 30 minutes of access
-			         .build(loader);
+
+			CacheLoader<String, ConfigurationMap> loader = new CacheLoader<String,ConfigurationMap>() { 
+
+				@Override
+				public ConfigurationMap load(String cfgKey) throws Exception {
+					return getConfigurationFromDDB(cfgKey,applicationName);
+				}
+			};
+			cache = CacheBuilder.newBuilder()
+					.expireAfterAccess(cacheTime, TimeUnit.MINUTES)      // cache will expire after 30 minutes of access
+					.build(loader);
 
 		}
 		catch (Exception e) {}
 
-}
+	}
 
-	private ConfigurationMap getConfigurationFromDDB(String cfgKey) throws IllegalArgumentException {
+	
+	//***  Return Reference type object of ConfigurationMap from DDB Table  **///
+	private ConfigurationMap getConfigurationFromDDB(String cfgKey,String applicationName) throws IllegalArgumentException {
 		DDBConfigurationMapStore ddbConfigurationMapStore = new DDBConfigurationMapStore();
-		
-		if(ddbConfigurationMapStore.getConfigurationMap(domain, realm, cfgKey, mapper) != null )
-			return ddbConfigurationMapStore.getConfigurationMap(domain, realm, cfgKey, mapper);
-		
-		if(ddbConfigurationMapStore.getConfigurationMap(domain, "*", cfgKey, mapper) != null)
-			return ddbConfigurationMapStore.getConfigurationMap(domain, "*", cfgKey, mapper);
-		
-		if(ddbConfigurationMapStore.getConfigurationMap("*", realm, cfgKey, mapper)!=null )
-			return ddbConfigurationMapStore.getConfigurationMap("*", realm, cfgKey, mapper);
-		
-		if(ddbConfigurationMapStore.getConfigurationMap("*", "*", cfgKey, mapper) != null)
-			return ddbConfigurationMapStore.getConfigurationMap("*", "*", cfgKey, mapper);
-		
-		throw new IllegalArgumentException("Invalid Input!"); 
+
+		if(ddbConfigurationMapStore.getConfigurationMap(domain, realm, cfgKey, mapper,applicationName) != null )
+			return ddbConfigurationMapStore.getConfigurationMap(domain, realm, cfgKey, mapper,applicationName);
+
+		if(ddbConfigurationMapStore.getConfigurationMap(domain, "*", cfgKey, mapper,applicationName) != null)
+			return ddbConfigurationMapStore.getConfigurationMap(domain, "*", cfgKey, mapper,applicationName);
+
+		if(ddbConfigurationMapStore.getConfigurationMap("*", realm, cfgKey, mapper,applicationName)!=null )
+			return ddbConfigurationMapStore.getConfigurationMap("*", realm, cfgKey, mapper,applicationName);
+
+		if(ddbConfigurationMapStore.getConfigurationMap("*", "*", cfgKey, mapper,applicationName) != null)
+			return ddbConfigurationMapStore.getConfigurationMap("*", "*", cfgKey, mapper,applicationName);
+
+		throw new IllegalArgumentException("Invalid Input! for: "+cfgKey); 
 	}
 
 }
